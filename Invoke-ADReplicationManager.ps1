@@ -1732,12 +1732,12 @@ function Invoke-ReplicationFix {
                 }
                 
                 'StaleReplication' {
-                    $action.Method = 'repadmin /replicate'
+                    $action.Method = 'repadmin /syncall'
                     
-                    if ($PSCmdlet.ShouldProcess($DomainController, "Replicate from $($issue.Partner)")) {
-                        Write-RepairLog "Forcing replication from $($issue.Partner) to $DomainController" -Level Verbose
+                    if ($PSCmdlet.ShouldProcess($DomainController, "Force replication sync (repadmin /syncall) for stale partner $($issue.Partner)")) {
+                        Write-RepairLog "Forcing a full sync on $DomainController (stale partner: $($issue.Partner))" -Level Verbose
                         
-                        # Target a specific partition sync
+                        # Full push/pull sync of all partitions; repairs the stale link along with the rest
                         $output = & repadmin /syncall /A /P /e $DomainController 2>&1
                         
                         if ($LASTEXITCODE -eq 0) {
